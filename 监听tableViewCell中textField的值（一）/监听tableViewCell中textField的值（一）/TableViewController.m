@@ -35,14 +35,13 @@
 }
 
 // 如果不能保证控制器的dealloc方法肯定会被调用，不要在viewDidLoad方法中注册通知。
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.tableView.rowHeight = 160;
     // 注册通知
     // 注意：此处监听的通知是：UITextFieldTextDidEndEditingNotification，textField结束编辑发送的通知，textField结束编辑时才会发送这个通知。
     // 想实时监听textField的内容的变化，你也可以注册这个通知：UITextFieldTextDidChangeNotification，textField值改变就会发送的通知。
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(aLiYunTextFieldDidEndEditing:) name:@"CustomTextFieldDidEndEditingNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cellTextFieldDidEndEditing:) name:@"CustomTextFieldDidEndEditingNotification" object:nil];
     
     //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(contentTextFieldDidEndEditing:) name:UITextFieldTextDidEndEditingNotification object:nil];
 }
@@ -53,10 +52,6 @@
     // 防止控制器被强引用导致-dealloc方法没有调用
     // 其他界面也有textField，其他界面的textField也会发送同样的通知，导致频繁的调用监听到通知的方法，而这些通知是这个界面不需要的，所以在视图将要消失的时候移除通知 同样，在视图将要显示的时候注册通知
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"CustomTextFieldDidEndEditingNotification" object:nil];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - UITableViewDataSource
@@ -93,7 +88,7 @@
 
 #pragma mark - private method
 // 接收到注册监听的通知后调用
-- (void)aLiYunTextFieldDidEndEditing:(NSNotification *)noti {
+- (void)cellTextFieldDidEndEditing:(NSNotification *)noti {
     CustomTextField *textField = noti.object;
     if (!textField.indexPath) {
         return;
@@ -114,6 +109,7 @@
     }
 }
 
+#pragma mark -Getter
 - (NSArray *)titles
 {
     if (!_titles) {
